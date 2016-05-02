@@ -142,7 +142,7 @@ function mic5(callback) {
     var view = new DataView(buffer);
 
     // Write WAV headers
-    // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
+    // http://www.topherlee.com/software/pcm-tut-wavformat.html
     this.writeUTFBytes(view, 0, "RIFF");
     view.setUint32(4, 44+interleaved.length*2);
     this.writeUTFBytes(view, 8, "WAVE");
