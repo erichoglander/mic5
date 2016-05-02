@@ -59,7 +59,7 @@ function mic5(callback) {
       if (!navigator.getUserMedia)
         return false;
     }
-    // Check for different AudioConect implementations
+    // Check for different AudioContext implementations
     if (!window.AudioContext) {
       window.AudioContext = window.webkitAudioContext;
       if (!window.AudioContext)
