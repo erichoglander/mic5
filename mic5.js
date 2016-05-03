@@ -41,7 +41,14 @@ function mic5(callback) {
     var error = function(e) {
       callback(false);
     };
-    navigator.getUserMedia({audio: true}, success, error);
+    if (navigator.mediaDevices.getUserMedia) {
+      var p = navigator.mediaDevices.getUserMedia({audio: true});
+      p.then(success);
+      p.catch(error);
+    }
+    else {
+      navigator.getUserMedia({audio: true}, success, error);
+    }
   }
 
   /**
@@ -49,22 +56,18 @@ function mic5(callback) {
    * @return bool
    */
   this.isCompatible = function() {
-    // Check for different getUserMedia implementations
-    if (!navigator.getUserMedia) {
-      navigator.getUserMedia = 
-        navigator.getUserMedia || 
+    // Check for getUserMedia implementation
+    if (!navigator.mediaDevices.getUserMedia) {
+      navigator.getUserMedia =
+        navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia || 
         navigator.msGetUserMedia;
       if (!navigator.getUserMedia)
         return false;
     }
-    // Check for different AudioContext implementations
-    if (!window.AudioContext) {
-      window.AudioContext = window.webkitAudioContext;
-      if (!window.AudioContext)
-        return false;
-    }
+    // Check for AudioContext implementation
+    if (!window.AudioContext)
+      return false;
     return true;
   }
   
@@ -120,9 +123,10 @@ function mic5(callback) {
 
   /**
    * Stop recording
-   * This will give up recording permissions
+   * This might give up recording permissions
    */
   this.stop = function() {
+    this.ctx.close();
     var tracks = this.stream.getAudioTracks();
     for (var i=0; i<tracks.length; i++)
       tracks[i].stop();
